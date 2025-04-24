@@ -1,0 +1,149 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "name": "Neil",
+      "email": "neil@space.com",
+      "password": "$2b$10$tn0tmtMFHjB.hRsLoapLzOR0zaQy9PwhZEHVErZsCwiuZ8Ps4s/yy",
+      "role": "Admin"
+    },
+    {
+      "id": "2",
+      "name": "Buzz",
+      "email": "buzz@space.com",
+      "password": "$2b$10$tn0tmtMFHjB.hRsLoapLzOMwFJ2l3wXoJx7Pxz2nlmnJy9gvX1hTu",
+      "role": "Astronauts"
+    },
+    {
+      "id": "3",
+      "name": "Elon",
+      "email": "elon@space.com",
+      "password": "$2b$10$tn0tmtMFHjB.hRsLoapLzODtJHTS2CyiGz7e8rsnBXd0iLMp5nKlK",
+      "role": "Traveller"
+    },
+    {
+      "id": "4",
+      "name": "Sally",
+      "email": "sally@space.com",
+      "password": "$2b$10$tn0tmtMFHjB.hRsLoapLzO.IRMLKuuiig4sxn8jMvMsBXbaFoMbcK",
+      "role": "Astronauts"
+    },
+    {
+      "id": "5",
+      "name": "Yuri",
+      "email": "yuri@space.com",
+      "password": "$2b$10$tn0tmtMFHjB.hRsLoapLzO8u7Gqw6XqYEQH4.4Lj31zunIDfr2Vmq",
+      "role": "Traveller"
+    },
+    {
+      "id": "6",
+      "name": "Ada",
+      "email": "ada@space.com",
+      "password": "$2b$10$tn0tmtMFHjB.hRsLoapLzO1bqPI2DTv6GoSxP8UlUy3nqAZjl9QCe",
+      "role": "Admin"
+    },
+    {
+      "id": "ad45",
+      "name": "charles",
+      "email": "charles.leclerc@gmail.com",
+      "password": "$2b$10$vpeK/L/wDXhTcn8fhQ0ecui612k9pIhmblsiOAVBzCmRewakMX7CW",
+      "role": "Traveller"
+    }
+  ],
+  "trips": [
+    {
+      "id": "1",
+      "name": "Mars Expedition",
+      "destination": "Mars",
+      "price": 500000,
+      "schedule": "2025-12-01",
+      "status": "completed",
+      "astronautId": "2"
+    },
+    {
+      "id": "2",
+      "name": "Lunar Orbit",
+      "destination": "Moon",
+      "price": 200000,
+      "schedule": "2025-06-15",
+      "status": "launched",
+      "astronautId": "4"
+    },
+    {
+      "id": "3",
+      "name": "Venus Flyby",
+      "destination": "Venus",
+      "price": 300000,
+      "schedule": "2025-09-01",
+      "status": "preparing",
+      "astronautId": "2"
+    },
+    {
+      "id": "4",
+      "name": "Saturn Rings Tour",
+      "destination": "Saturn",
+      "price": 750000,
+      "schedule": "2026-03-10",
+      "status": "preparing",
+      "astronautId": "4"
+    },
+    {
+      "id": "6238",
+      "name": "Asteroid Belt Safari ",
+      "destination": "Asteroid Belt",
+      "price": 5000000,
+      "schedule": "2025-04-26",
+      "astronautId": "4"
+    }
+  ],
+  "bookings": [
+    {
+      "id": "1",
+      "userId": "3",
+      "tripId": "1",
+      "status": "confirmed"
+    },
+    {
+      "id": "2",
+      "userId": "5",
+      "tripId": "2",
+      "status": "cancelled"
+    },
+    {
+      "id": "4",
+      "userId": "3",
+      "tripId": "4",
+      "status": "pending"
+    },
+    {
+      "id": "5",
+      "userId": "5",
+      "tripId": "1",
+      "status": "confirmed"
+    },
+    {
+      "id": "7",
+      "userId": "5",
+      "tripId": "4",
+      "status": "confirmed"
+    },
+    {
+      "id": "ff09",
+      "userId": "3",
+      "tripId": "4",
+      "status": "pending"
+    },
+    {
+      "id": "a977",
+      "userId": "3",
+      "tripId": null,
+      "status": "confirmed"
+    },
+    {
+      "id": "9122",
+      "userId": "3",
+      "tripId": "6238",
+      "status": "pending"
+    }
+  ]
+}
