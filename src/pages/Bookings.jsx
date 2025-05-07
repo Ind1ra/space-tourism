@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
+import { toast } from "react-toastify";
 
 function Bookings() {
   const [bookings, setBookings] = useState([]);
@@ -33,9 +34,9 @@ function Bookings() {
       setBookings(bookings.map(booking => 
         booking.id === bookingId ? { ...booking, status: newStatus } : booking
       ));
-      alert(`Booking ${newStatus} successfully!`);
+      toast.success(`Booking ${newStatus} successfully!`);
     } else {
-      alert("Failed to update booking status.");
+      toast.error("Failed to update booking status.");
     }
   }
 

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 function Trips() {
   const [trips, setTrips] = useState([]);
@@ -52,7 +53,7 @@ function Trips() {
     });
     setTrips(trips.map(trip => trip.id === editTrip.id ? editTrip : trip));
     setEditTrip(null);
-    alert("Trip updated!");
+    toast.success("Trip updated!");
   }
 
   async function handleDeleteTrip(tripId) {
@@ -61,7 +62,7 @@ function Trips() {
         method: "DELETE",
       });
       setTrips(trips.filter(trip => trip.id !== tripId));
-      alert("Trip deleted successfully!");
+      toast.success("Trip deleted successfully!");
     }
   }
 

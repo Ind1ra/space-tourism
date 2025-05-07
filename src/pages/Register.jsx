@@ -3,6 +3,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { login } from "../authReducer";
 import bcrypt from "bcryptjs";
+import { toast } from "react-toastify";
 
 function Register() {
   const dispatch = useDispatch();
@@ -26,7 +27,7 @@ function Register() {
       dispatch(login(user));
       navigate("/dashboard");
     } else {
-      alert("Registration failed.");
+      toast.error("Registration failed.");
     }
   }
 

@@ -3,6 +3,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { login } from "../authReducer";
 import bcrypt from "bcryptjs";
+import { toast } from "react-toastify";
 
 function Login() {
   const dispatch = useDispatch();
@@ -21,10 +22,10 @@ function Login() {
         dispatch(login(user));
         navigate("/dashboard");
       } else {
-        alert("Invalid credentials");
+        toast.error("Invalid credentials");
       }
     } else {
-      alert("Invalid credentials");
+      toast.error("Invalid credentials");
     }
   }
 

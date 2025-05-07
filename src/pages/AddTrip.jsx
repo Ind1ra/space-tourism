@@ -1,9 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import Modal from "react-modal";
 
-Modal.setAppElement("#root");
 
 function AddTrip() {
   const navigate = useNavigate();
@@ -29,7 +27,7 @@ function AddTrip() {
       body: JSON.stringify(newTrip),
     });
     if (response.ok) {
-      alert("Trip added!");
+      toast.success("Trip added!");
       navigate("/dashboard");
     }
   }
