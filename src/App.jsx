@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -26,6 +28,7 @@ function App() {
         <Route path="/add-trip" element={user && user.role === "Admin" ? <AddTrip /> : <Navigate to="/dashboard" />} />
         <Route path="/manage-users" element={user && user.role === "Admin" ? <ManageUsers /> : <Navigate to="/dashboard" />} />
       </Routes>
+      <ToastContainer position="top-right" autoClose={2000} />
     </BrowserRouter>
   );
 }
