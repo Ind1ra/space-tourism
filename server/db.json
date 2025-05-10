@@ -44,7 +44,7 @@
     },
     {
       "id": "ad45",
-      "name": "charles",
+      "name": "Charles",
       "email": "charles.leclerc@gmail.com",
       "password": "$2b$10$vpeK/L/wDXhTcn8fhQ0ecui612k9pIhmblsiOAVBzCmRewakMX7CW",
       "role": "Traveller"
@@ -57,43 +57,62 @@
       "destination": "Mars",
       "price": 500000,
       "schedule": "2025-12-01",
-      "status": "completed",
-      "astronautId": "2"
+      "status": "completed"
     },
     {
-      "id": "2",
       "name": "Lunar Orbit",
       "destination": "Moon",
       "price": 200000,
       "schedule": "2025-06-15",
       "status": "launched",
-      "astronautId": "4"
+      "id": "2"
     },
     {
-      "id": "3",
       "name": "Venus Flyby",
       "destination": "Venus",
       "price": 300000,
       "schedule": "2025-09-01",
       "status": "preparing",
-      "astronautId": "2"
+      "id": "3"
     },
     {
-      "id": "4",
       "name": "Saturn Rings Tour",
       "destination": "Saturn",
       "price": 750000,
       "schedule": "2026-03-10",
       "status": "preparing",
-      "astronautId": "4"
+      "id": "4"
     },
     {
       "id": "6238",
-      "name": "Asteroid Belt Safari ",
+      "name": "Asteroid Belt Safari",
       "destination": "Asteroid Belt",
       "price": 5000000,
-      "schedule": "2025-04-26",
-      "astronautId": "4"
+      "schedule": "2025-04-26"
+    },
+    {
+      "id": "e2b3",
+      "name": "some",
+      "destination": "mars",
+      "price": 789456,
+      "schedule": "2025-05-23",
+      "status": "preparing"
+    },
+    {
+      "id": "3813",
+      "name": "moon space trip",
+      "destination": "to the moon",
+      "price": 500000,
+      "schedule": "2025-05-23",
+      "status": "preparing"
+    },
+    {
+      "id": "bf12",
+      "name": "ывапр",
+      "destination": "цукен",
+      "price": 7413,
+      "schedule": "2025-05-23",
+      "status": "preparing"
     }
   ],
   "bookings": [
@@ -134,16 +153,77 @@
       "status": "pending"
     },
     {
-      "id": "a977",
-      "userId": "3",
-      "tripId": null,
-      "status": "confirmed"
-    },
-    {
       "id": "9122",
       "userId": "3",
       "tripId": "6238",
       "status": "pending"
+    },
+    {
+      "id": "cb2d",
+      "userId": "08a5",
+      "tripId": "1",
+      "status": "pending"
+    }
+  ],
+  "photos": [
+    {
+      "id": "1",
+      "tripId": "1",
+      "url": "/images/mars_surface.jpg",
+      "description": "Mars surface during expedition"
+    },
+    {
+      "id": "1746889411772",
+      "tripId": "2",
+      "url": "/images/4c898cfb-1082-482e-980c-f524d05d1264-stars.jpg",
+      "description": "New photo"
+    }
+  ],
+  "astronaut_assignments": [
+    {
+      "id": "1",
+      "userId": "2",
+      "tripId": "1"
+    },
+    {
+      "id": "5",
+      "userId": "4",
+      "tripId": "6238"
+    },
+    {
+      "id": "affa",
+      "userId": "4",
+      "tripId": "e2b3"
+    },
+    {
+      "id": "bf11",
+      "userId": "4",
+      "tripId": "3813"
+    },
+    {
+      "id": "8e1b",
+      "userId": "2",
+      "tripId": "bf12"
+    },
+    {
+      "id": "3e41",
+      "userId": "2",
+      "tripId": "3"
+    },
+    {
+      "id": "b0d8",
+      "userId": "4",
+      "tripId": "4"
+    },
+    {
+      "id": "424b",
+      "userId": "2",
+      "tripId": "4"
+    },
+    {
+      "id": "5340",
+      "userId": "4",
+      "tripId": "2"
     }
   ]
 }

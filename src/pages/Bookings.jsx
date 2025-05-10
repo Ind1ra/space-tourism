@@ -20,7 +20,8 @@ function Bookings() {
 
     fetch(url)
       .then((res) => res.json())
-      .then((data) => setBookings(data));
+      .then((data) => setBookings(data))
+      .catch(() => toast.error("Failed to load bookings"));
   }, [user.id, user.role, statusFilter]);
 
   async function handleStatusChange(bookingId, newStatus) {
