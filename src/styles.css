@@ -1,0 +1,271 @@
+/* Подключаем шрифты через Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;400;600&display=swap');
+
+/* Сбрасываем стандартные стили */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #0d0d1a 0%, #1a1a3d 100%);
+  color: #e6e6fa;
+  position: relative;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Фон со звёздами и планетой */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('https://www.transparenttextures.com/patterns/stardust.png') repeat;
+  opacity: 0.2;
+  z-index: -1;
+  animation: twinkle 5s infinite;
+}
+
+/* Планета на фоне */
+body::after {
+  content: '';
+  position: fixed;
+  top: 10%;
+  right: 10%;
+  width: 300px;
+  height: 300px;
+  background: url('https://freepngimg.com/thumb/planet/15-planet-png-image.png') no-repeat center;
+  background-size: contain;
+  opacity: 0.3;
+  z-index: -1;
+  animation: planetGlow 8s infinite ease-in-out;
+}
+
+/* Анимация свечения планеты */
+@keyframes planetGlow {
+  0% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.05); }
+  100% { opacity: 0.3; transform: scale(1); }
+}
+
+/* Частицы (летающие звёзды) */
+.particles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.particle {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+  animation: float 10s infinite linear;
+}
+
+.particle:nth-child(1) { width: 2px; height: 2px; top: 10%; left: 15%; animation-delay: 0s; }
+.particle:nth-child(2) { width: 3px; height: 3px; top: 20%; left: 30%; animation-delay: 2s; }
+.particle:nth-child(3) { width: 1px; height: 1px; top: 40%; left: 50%; animation-delay: 4s; }
+.particle:nth-child(4) { width: 2px; height: 2px; top: 60%; left: 70%; animation-delay: 1s; }
+.particle:nth-child(5) { width: 3px; height: 3px; top: 80%; left: 85%; animation-delay: 3s; }
+
+/* Анимация мерцания звёзд */
+@keyframes twinkle {
+  0% { opacity: 0.2; }
+  50% { opacity: 0.4; }
+  100% { opacity: 0.2; }
+}
+
+/* Анимация движения частиц */
+@keyframes float {
+  0% { transform: translateY(0) translateX(0); opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { transform: translateY(100vh) translateX(50vw); opacity: 0; }
+}
+
+/* Анимация парения для карточек */
+@keyframes hoverFloat {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+  100% { transform: translateY(0); }
+}
+
+/* Анимация открытия модального окна (телепортация) */
+@keyframes teleportIn {
+  0% { transform: scale(0.5); opacity: 0; }
+  50% { transform: scale(1.05); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Заголовки */
+h1, h2, h3, h4 {
+  font-family: 'Orbitron', sans-serif;
+  color: #00d4ff;
+  text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+  animation: fadeIn 1s ease-in-out;
+}
+
+/* Анимация появления текста */
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Стили для кнопок */
+button {
+  background: linear-gradient(45deg, #00d4ff, #8a2be2);
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+}
+
+button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.8);
+  background: linear-gradient(45deg, #8a2be2, #00d4ff);
+}
+
+/* Стили для ссылок */
+a {
+  color: #00d4ff;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: #ff00ff;
+  text-shadow: 0 0 5px rgba(255, 0, 255, 0.5);
+}
+
+/* Контейнер для контента */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Сетка для карточек туров */
+.trip-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  padding: 20px 0;
+}
+
+/* Карточки для туров */
+.trip-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 20px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: hoverFloat 4s infinite ease-in-out;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 400px; /* Устанавливаем минимальную высоту для карточки */
+}
+
+.trip-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+}
+
+/* Контейнер для кнопок в карточке */
+.trip-card-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+  flex-wrap: wrap;
+}
+
+/* Контейнер для фотографий */
+.trip-card-photos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 15px;
+  flex-grow: 1; /* Позволяет фото занимать больше пространства */
+}
+
+/* Стили для изображений в карточке */
+.trip-card-photos img {
+  max-width: 100%; /* Занимает всю доступную ширину карточки */
+  height: 250px; /* Устанавливаем фиксированную высоту для большей доминанты */
+  object-fit: cover; /* Сохраняем пропорции */
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+}
+
+/* Стили для форм */
+input, select {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 5px;
+  padding: 8px;
+  color: #e6e6fa;
+  font-family: 'Poppins', sans-serif;
+  transition: border-color 0.3s ease;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: #00d4ff;
+  box-shadow: 0 0 5px rgba(0, 212, 255, 0.5);
+}
+
+/* Стили для модальных окон */
+.modal {
+  background: rgba(26, 26, 61, 0.95);
+  border: 1px solid #00d4ff;
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+  animation: teleportIn 0.5s ease-in-out;
+}
+
+/* Стили для изображений */
+img {
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+}
+
+/* Стили для пагинации */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 30px;
+}
+
+.pagination button {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 8px 12px;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+
+.pagination button:hover {
+  background: linear-gradient(45deg, #00d4ff, #8a2be2);
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
+}
+
+.pagination button:disabled {
+  background: rgba(255, 255, 255, 0.05);
+  cursor: not-allowed;
+  box-shadow: none;
+}

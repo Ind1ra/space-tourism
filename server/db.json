@@ -5,49 +5,64 @@
       "name": "Neil",
       "email": "neil@space.com",
       "password": "$2b$10$tn0tmtMFHjB.hRsLoapLzOR0zaQy9PwhZEHVErZsCwiuZ8Ps4s/yy",
-      "role": "Admin"
+      "role": "Admin",
+      "isBanned": false
     },
     {
       "id": "2",
       "name": "Buzz",
       "email": "buzz@space.com",
       "password": "$2b$10$tn0tmtMFHjB.hRsLoapLzOMwFJ2l3wXoJx7Pxz2nlmnJy9gvX1hTu",
-      "role": "Astronauts"
+      "role": "Astronauts",
+      "isBanned": false
     },
     {
       "id": "3",
       "name": "Elon",
       "email": "elon@space.com",
       "password": "$2b$10$tn0tmtMFHjB.hRsLoapLzODtJHTS2CyiGz7e8rsnBXd0iLMp5nKlK",
-      "role": "Traveller"
+      "role": "Traveller",
+      "isBanned": false
     },
     {
       "id": "4",
       "name": "Sally",
       "email": "sally@space.com",
       "password": "$2b$10$tn0tmtMFHjB.hRsLoapLzO.IRMLKuuiig4sxn8jMvMsBXbaFoMbcK",
-      "role": "Astronauts"
+      "role": "Astronauts",
+      "isBanned": false
     },
     {
       "id": "5",
       "name": "Yuri",
       "email": "yuri@space.com",
       "password": "$2b$10$tn0tmtMFHjB.hRsLoapLzO8u7Gqw6XqYEQH4.4Lj31zunIDfr2Vmq",
-      "role": "Traveller"
+      "role": "Traveller",
+      "isBanned": false
     },
     {
       "id": "6",
       "name": "Ada",
       "email": "ada@space.com",
       "password": "$2b$10$tn0tmtMFHjB.hRsLoapLzO1bqPI2DTv6GoSxP8UlUy3nqAZjl9QCe",
-      "role": "Admin"
+      "role": "Admin",
+      "isBanned": false
     },
     {
       "id": "ad45",
       "name": "Charles",
       "email": "charles.leclerc@gmail.com",
       "password": "$2b$10$vpeK/L/wDXhTcn8fhQ0ecui612k9pIhmblsiOAVBzCmRewakMX7CW",
-      "role": "Traveller"
+      "role": "Traveller",
+      "isBanned": false
+    },
+    {
+      "id": "7b15",
+      "name": "test",
+      "email": "test@space.com",
+      "password": "$2b$10$w907dygAtSdLMMrjVE/83.yqerrXc34vG2MdbG2gjQQN.B9XU0hk.",
+      "role": "Traveller",
+      "isBanned": false
     }
   ],
   "trips": [
@@ -88,7 +103,8 @@
       "name": "Asteroid Belt Safari",
       "destination": "Asteroid Belt",
       "price": 5000000,
-      "schedule": "2025-04-26"
+      "schedule": "2025-04-26",
+      "status": "preparing"
     },
     {
       "id": "e2b3",
@@ -99,20 +115,12 @@
       "status": "preparing"
     },
     {
-      "id": "3813",
       "name": "moon space trip",
       "destination": "to the moon",
       "price": 500000,
       "schedule": "2025-05-23",
-      "status": "preparing"
-    },
-    {
-      "id": "bf12",
-      "name": "ывапр",
-      "destination": "цукен",
-      "price": 7413,
-      "schedule": "2025-05-23",
-      "status": "preparing"
+      "status": "preparing",
+      "id": "3813"
     }
   ],
   "bookings": [
@@ -159,9 +167,9 @@
       "status": "pending"
     },
     {
-      "id": "cb2d",
-      "userId": "08a5",
-      "tripId": "1",
+      "id": "52d5",
+      "userId": "3",
+      "tripId": "2",
       "status": "pending"
     }
   ],
@@ -177,6 +185,12 @@
       "tripId": "2",
       "url": "/images/4c898cfb-1082-482e-980c-f524d05d1264-stars.jpg",
       "description": "New photo"
+    },
+    {
+      "id": "1746973411276",
+      "tripId": "3813",
+      "url": "/images/8f17edb0-7b91-4206-b012-4d11ebc8e897-stars.jpg",
+      "description": "starts"
     }
   ],
   "astronaut_assignments": [
@@ -196,34 +210,29 @@
       "tripId": "e2b3"
     },
     {
-      "id": "bf11",
+      "id": "5340",
       "userId": "4",
-      "tripId": "3813"
+      "tripId": "2"
     },
     {
-      "id": "8e1b",
+      "id": "abca",
+      "userId": "4",
+      "tripId": "4"
+    },
+    {
+      "id": "94dd",
       "userId": "2",
-      "tripId": "bf12"
+      "tripId": "4"
     },
     {
-      "id": "3e41",
+      "id": "7d19",
       "userId": "2",
       "tripId": "3"
     },
     {
-      "id": "b0d8",
+      "id": "d828",
       "userId": "4",
-      "tripId": "4"
-    },
-    {
-      "id": "424b",
-      "userId": "2",
-      "tripId": "4"
-    },
-    {
-      "id": "5340",
-      "userId": "4",
-      "tripId": "2"
+      "tripId": "3813"
     }
   ]
 }

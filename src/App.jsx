@@ -17,6 +17,13 @@ function App() {
 
   return (
     <BrowserRouter>
+      <div className="particles">
+        <div className="particle"></div>
+        <div className="particle"></div>
+        <div className="particle"></div>
+        <div className="particle"></div>
+        <div className="particle"></div>
+      </div>
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />

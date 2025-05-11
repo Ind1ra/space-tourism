@@ -12,6 +12,7 @@ function AddTrip() {
   const [astronauts, setAstronauts] = useState([]);
   const [photo, setPhoto] = useState(null);
   const [photoDescription, setPhotoDescription] = useState("");
+  const [photoPreview, setPhotoPreview] = useState(null);
 
   useEffect(() => {
     fetch("http://localhost:3001/users?role=Astronauts")
@@ -20,69 +21,180 @@ function AddTrip() {
       .catch(() => toast.error("Failed to load astronauts"));
   }, []);
 
+  const handlePhotoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (!file.type.startsWith("image/")) {
+        toast.error("Only image files are allowed");
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("File size exceeds 5MB limit");
+        return;
+      }
+      setPhoto(file);
+      setPhotoPreview(URL.createObjectURL(file));
+    } else {
+      setPhoto(null);
+      setPhotoPreview(null);
+    }
+  };
+
   async function handleSubmit(e) {
     e.preventDefault();
     if (new Date(schedule) < new Date()) {
-        toast.error("Schedule date cannot be in the past");
-        return;
+      toast.error("Schedule date cannot be in the past");
+      return;
     }
+    if (!name || name.length < 3) {
+      toast.error("Trip name must be at least 3 characters long");
+      return;
+    }
+    if (!destination || destination.length < 3) {
+      toast.error("Destination must be at least 3 characters long");
+      return;
+    }
+    if (parseInt(price) <= 0) {
+      toast.error("Price must be positive");
+      return;
+    }
+
     const newTrip = { name, destination, price: parseInt(price), schedule, status: "preparing" };
-    const response = await fetch("http://localhost:3001/trips", {
+    try {
+      const response = await fetch("http://localhost:3001/trips", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newTrip),
-    });
-    if (response.ok) {
-        const trip = await response.json();
-        // Add astronaut assignments
-        for (const astronautId of astronautIds) {
-            await fetch("http://localhost:3001/astronaut_assignments", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ userId: astronautId, tripId: trip.id }),
-            });
+      });
+      if (!response.ok) {
+        throw new Error(`Failed to add trip: ${response.statusText}`);
+      }
+      const trip = await response.json();
+
+      for (const astronautId of astronautIds) {
+        const assignmentResponse = await fetch("http://localhost:3001/astronaut_assignments", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId: astronautId, tripId: trip.id }),
+        });
+        if (!assignmentResponse.ok) {
+          console.error(`Failed to assign astronaut ${astronautId}`);
         }
-        // Add photo if provided
-        if (photo && photoDescription) {
-            const formData = new FormData();
-            formData.append("photo", photo);
-            formData.append("tripId", trip.id);
-            formData.append("description", photoDescription);
-            const photoResponse = await fetch("http://localhost:8080/api/photos", {
-                method: "POST",
-                body: formData,
-            });
-            if (!photoResponse.ok) {
-                toast.error("Failed to upload photo");
-            }
+      }
+
+      if (photo) {
+        const formData = new FormData();
+        formData.append("photo", photo);
+        formData.append("tripId", trip.id);
+        formData.append("description", photoDescription || "New photo");
+        console.log("Uploading photo with data:", { tripId: trip.id, description: photoDescription });
+
+        const photoResponse = await fetch("http://localhost:8080/api/photos", {
+          method: "POST",
+          body: formData,
+        });
+        if (photoResponse.ok) {
+          const photoData = await photoResponse.json();
+          console.log("Photo uploaded successfully:", photoData);
+          const newPhotoEntry = {
+            id: photoData.id,
+            tripId: trip.id,
+            url: photoData.url,
+            description: photoData.description,
+          };
+          const syncResponse = await fetch("http://localhost:3001/photos", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newPhotoEntry),
+          });
+          if (!syncResponse.ok) {
+            console.error("Failed to sync photo with JSON Server");
+          }
+        } else {
+          const errorText = await photoResponse.text();
+          console.error("Photo upload failed:", errorText);
+          toast.error(`Failed to upload photo: ${errorText}`);
         }
-        toast.success("Trip added!");
-        navigate("/dashboard");
-    } else {
-        toast.error("Failed to add trip");
+      }
+
+      toast.success("Trip added!");
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Error adding trip:", error);
+      toast.error(`Failed to add trip: ${error.message}`);
     }
-}
+  }
 
   return (
-    <div style={{ padding: "20px", color: "white", background: "#0d0d1a" }}>
-      <h1>Add New Trip (Admin Only)</h1>
-      <form onSubmit={handleSubmit}>
-        <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Trip Name" required />
-        <input value={destination} onChange={(e) => setDestination(e.target.value)} placeholder="Destination" required />
-        <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="Price" required />
-        <input type="date" value={schedule} onChange={(e) => setSchedule(e.target.value)} required />
-        <select multiple value={astronautIds} onChange={(e) => setAstronautIds(Array.from(e.target.selectedOptions, option => option.value))}>
+    <div className="container">
+      <h1 style={{ textAlign: "center", marginBottom: "30px" }}>
+        Add New Trip (Admin Only)
+      </h1>
+      <form onSubmit={handleSubmit} className="modal" style={{
+        maxWidth: "500px",
+        margin: "0 auto",
+        display: "flex",
+        flexDirection: "column",
+        gap: "15px",
+        padding: "20px",
+        borderRadius: "10px"
+      }}>
+        <input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Trip Name"
+          required
+        />
+        <input
+          value={destination}
+          onChange={(e) => setDestination(e.target.value)}
+          placeholder="Destination"
+          required
+        />
+        <input
+          type="number"
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
+          placeholder="Price"
+          required
+        />
+        <input
+          type="date"
+          value={schedule}
+          onChange={(e) => setSchedule(e.target.value)}
+          required
+        />
+        <select
+          multiple
+          value={astronautIds}
+          onChange={(e) => setAstronautIds(Array.from(e.target.selectedOptions, option => option.value))}
+          style={{ minHeight: "100px" }}
+        >
           {astronauts.map(astro => (
             <option key={astro.id} value={astro.id}>{astro.name}</option>
           ))}
         </select>
-        <input
-          type="file"
-          accept="image/jpeg,image/jpg,image/png"
-          onChange={(e) => setPhoto(e.target.files[0])}
-        />
-        <input value={photoDescription} onChange={(e) => setPhotoDescription(e.target.value)} placeholder="Photo Description" />
-        <button type="submit">Add Trip</button>
+        <div>
+          <input
+            type="file"
+            accept="image/jpeg,image/jpg,image/png"
+            onChange={handlePhotoChange}
+          />
+          {photoPreview && (
+            <div style={{ marginTop: "10px" }}>
+              <img src={photoPreview} alt="Preview" style={{ maxWidth: "150px" }} />
+            </div>
+          )}
+          <input
+            value={photoDescription}
+            onChange={(e) => setPhotoDescription(e.target.value)}
+            placeholder="Photo Description (optional)"
+            style={{ width: "100%", marginTop: "10px" }}
+          />
+        </div>
+        <button type="submit">
+          Add Trip
+        </button>
       </form>
     </div>
   );
