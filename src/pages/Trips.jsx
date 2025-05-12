@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { toast } from "react-toastify";
+import { setBookings, addBooking } from "../bookingReducer";
 
 function Trips() {
   const [trips, setTrips] = useState([]);
-  const [bookings, setBookings] = useState([]);
+  const bookings = useSelector((state) => state.bookings.bookings);
   const [users, setUsers] = useState([]);
   const [photos, setPhotos] = useState([]);
   const [astronautAssignments, setAstronautAssignments] = useState([]);
@@ -24,6 +25,7 @@ function Trips() {
   const [tripToDelete, setTripToDelete] = useState(null);
   const tripsPerPage = 3;
   const user = useSelector((state) => state.auth.user);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     setIsLoading(true);
@@ -36,14 +38,14 @@ function Trips() {
     ])
       .then(([tripsData, bookingsData, usersData, photosData, assignmentsData]) => {
         setTrips(tripsData);
-        setBookings(bookingsData);
+        dispatch(setBookings(bookingsData)); // Загружаем бронирования в Redux
         setUsers(usersData);
         setPhotos(photosData);
         setAstronautAssignments(assignmentsData);
       })
       .catch(() => toast.error("Failed to load data"))
       .finally(() => setIsLoading(false));
-  }, []);
+  }, [dispatch]);
 
   function handleBook(tripId) {
     if (user.isBanned) {
@@ -85,6 +87,7 @@ function Trips() {
       }
 
       const booking = {
+        id: Date.now().toString(), // Генерируем временный ID (замени на реальный серверный ID)
         userId: user.id,
         tripId: bookingTripId,
         status: "pending",
@@ -97,9 +100,9 @@ function Trips() {
         body: JSON.stringify(booking),
       });
       if (response.ok) {
+        const newBooking = await response.json();
+        dispatch(addBooking(newBooking)); // Добавляем бронирование в Redux
         toast.success("Trip booked successfully!");
-        const bookingsData = await fetch("http://localhost:3001/bookings").then((res) => res.json());
-        setBookings(bookingsData);
         setShowBookingForm(false);
         setCountry("");
         setAge("");
@@ -383,7 +386,7 @@ function Trips() {
       <div style={{ display: "flex", gap: "15px", marginBottom: "20px", justifyContent: "center" }}>
         <div>
           <label style={{ marginRight: "10px" }}>Filter by Status: </label>
-          <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
+          <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="cosmic-select">
             <option value="all">All</option>
             <option value="preparing">Preparing</option>
             <option value="launched">Launched</option>
@@ -396,6 +399,7 @@ function Trips() {
             type="date"
             value={filterDate}
             onChange={(e) => setFilterDate(e.target.value)}
+            className="cosmic-input"
           />
         </div>
       </div>
@@ -444,6 +448,7 @@ function Trips() {
                     <select
                       value={trip.status}
                       onChange={(e) => handleStatusUpdate(trip.id, e.target.value)}
+                      className="cosmic-select"
                     >
                       <option value="preparing">Preparing</option>
                       <option value="launched">Launched</option>
@@ -535,7 +540,7 @@ function Trips() {
           width: "100%"
         }}>
           <h2>Booking Details</h2>
-          <form onSubmit={handleBookingSubmit} style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
+          <form onSubmit={handleBookingSubmit} style={{ display: "flex", flexDirection: "column", gap: "15px" }} className="booking-form">
             <div>
               <label style={{ display: "block", marginBottom: "5px" }}>Country:</label>
               <input
@@ -556,6 +561,7 @@ function Trips() {
                 required
                 min="1"
                 max="120"
+                style={{ width: "100%", padding: "8px" }}
               />
             </div>
             <div style={{ display: "flex", gap: "10px" }}>
@@ -584,12 +590,14 @@ function Trips() {
               onChange={(e) => setEditTrip({ ...editTrip, name: e.target.value })}
               placeholder="Trip Name"
               required
+              className="cosmic-input"
             />
             <input
               value={editTrip.destination}
               onChange={(e) => setEditTrip({ ...editTrip, destination: e.target.value })}
               placeholder="Destination"
               required
+              className="cosmic-input"
             />
             <input
               type="number"
@@ -597,12 +605,15 @@ function Trips() {
               onChange={(e) => setEditTrip({ ...editTrip, price: parseInt(e.target.value) })}
               placeholder="Price"
               required
+              className="cosmic-input"
             />
             <input
               type="date"
               value={editTrip.schedule}
               onChange={(e) => setEditTrip({ ...editTrip, schedule: e.target.value })}
+              placeholder="Select schedule date"
               required
+              className="cosmic-input"
             />
             <select
               multiple
@@ -613,6 +624,7 @@ function Trips() {
                   astronautIds: Array.from(e.target.selectedOptions, (option) => option.value),
                 })
               }
+              className="cosmic-select"
               style={{ minHeight: "100px" }}
             >
               {astronauts.map((astro) => (
@@ -675,6 +687,7 @@ function Trips() {
                     setEditTrip({ ...editTrip, newPhotoDescription: e.target.value })
                   }
                   style={{ width: "100%", marginTop: "10px" }}
+                  className="cosmic-input"
                 />
               </div>
             </div>

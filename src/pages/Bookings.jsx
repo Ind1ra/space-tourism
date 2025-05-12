@@ -1,29 +1,40 @@
 import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { toast } from "react-toastify";
+import { setBookings, updateBooking } from "../bookingReducer";
 
 function Bookings() {
-  const [bookings, setBookings] = useState([]);
+  const bookings = useSelector((state) => state.bookings.bookings);
   const [trips, setTrips] = useState([]);
   const [users, setUsers] = useState([]);
-  const [filterStatus, setFilterStatus] = useState("all");
+  const [photos, setPhotos] = useState([]);
+  const [astronautAssignments, setAstronautAssignments] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const user = useSelector((state) => state.auth.user);
+  const dispatch = useDispatch();
 
   useEffect(() => {
+    setIsLoading(true);
     Promise.all([
-      fetch("http://localhost:3001/bookings").then((res) => res.json()),
       fetch("http://localhost:3001/trips").then((res) => res.json()),
+      fetch("http://localhost:3001/bookings").then((res) => res.json()),
       fetch("http://localhost:3001/users").then((res) => res.json()),
+      fetch("http://localhost:3001/photos").then((res) => res.json()),
+      fetch("http://localhost:3001/astronaut_assignments").then((res) => res.json()),
     ])
-      .then(([bookingsData, tripsData, usersData]) => {
-        setBookings(bookingsData);
+      .then(([tripsData, bookingsData, usersData, photosData, assignmentsData]) => {
         setTrips(tripsData);
+        dispatch(setBookings(bookingsData)); // Загружаем бронирования в Redux
         setUsers(usersData);
+        setPhotos(photosData);
+        setAstronautAssignments(assignmentsData);
       })
-      .catch(() => toast.error("Failed to load data"));
-  }, []);
+      .catch(() => toast.error("Failed to load data"))
+      .finally(() => setIsLoading(false));
+  }, [dispatch]);
 
   async function handleStatusUpdate(bookingId, newStatus) {
+    setIsLoading(true);
     try {
       const response = await fetch(`http://localhost:3001/bookings/${bookingId}`, {
         method: "PATCH",
@@ -31,183 +42,184 @@ function Bookings() {
         body: JSON.stringify({ status: newStatus }),
       });
       if (response.ok) {
-        setBookings(
-          bookings.map((booking) =>
-            booking.id === bookingId ? { ...booking, status: newStatus } : booking
-          )
-        );
+        dispatch(updateBooking({ id: bookingId, status: newStatus })); // Обновляем в Redux
         toast.success("Booking status updated!");
       } else {
         toast.error("Failed to update booking status");
       }
     } catch {
       toast.error("Network error");
+    } finally {
+      setIsLoading(false);
     }
   }
 
-  const getTripName = (tripId) => {
+  const getTripDetails = (tripId) => {
     const trip = trips.find((t) => t.id === tripId);
-    return trip ? trip.name : "Unknown Trip";
+    return trip || { name: "Unknown", destination: "Unknown", schedule: "Unknown" };
   };
 
-  const getUserEmail = (userId) => {
+  const getUserDetails = (userId) => {
     const user = users.find((u) => u.id === userId);
-    return user ? user.email : "Unknown User";
+    return user || { name: "Unknown", email: "Unknown" };
   };
 
-  const filteredBookings = bookings.filter(
-    (booking) =>
-      (filterStatus === "all" || booking.status === filterStatus) &&
-      trips.some((t) => t.id === booking.tripId) &&
-      users.some((u) => u.id === booking.userId)
-  );
-
-  const userBookings = bookings.filter(
-    (booking) =>
-      booking.userId === user.id &&
-      trips.some((t) => t.id === booking.tripId)
-  );
-
-  const getBookedTrips = () => {
-    const bookedTripIds = [...new Set(bookings.map((booking) => booking.tripId))];
-    return bookedTripIds
-      .map((tripId) => {
-        const trip = trips.find((t) => t.id === tripId);
-        if (!trip) return null;
-        const tripBookings = bookings.filter((b) => b.tripId === tripId);
-        const userEmails = tripBookings
-          .map((b) => getUserEmail(b.userId))
-          .filter((email, index, self) => email && self.indexOf(email) === index);
-        return {
-          id: tripId,
-          name: trip.name,
-          emails: userEmails,
-        };
+  const getAstronautNames = (tripId) => {
+    const assignments = astronautAssignments.filter((a) => a.tripId === tripId);
+    return assignments
+      .map((a) => {
+        const astronaut = users.find((u) => u.id === a.userId && u.role === "Astronauts");
+        return astronaut ? astronaut.name : "Unknown";
       })
-      .filter((trip) => trip !== null);
+      .join(", ") || "Unassigned";
   };
+
+  const getTripBookings = (tripId) => {
+    return bookings.filter((booking) => booking.tripId === tripId);
+  };
+
+  const travellerBookings = bookings.filter((booking) => booking.userId === user.id);
+  const tripsWithAssignments = trips.filter((trip) =>
+    astronautAssignments.some((a) => a.tripId === trip.id && a.userId === user.id)
+  );
 
   return (
     <div className="container">
-      <h1 style={{ textAlign: "center", marginBottom: "30px" }}>
-        Bookings
-      </h1>
+      <h1 style={{ textAlign: "center", marginBottom: "30px" }}>Your Bookings</h1>
+      {isLoading && <p style={{ textAlign: "center" }}>Loading...</p>}
 
       {user.role === "Traveller" && (
-        <>
-          <h2 style={{ color: "#ff00ff", marginBottom: "15px" }}>
-            Your Bookings
-          </h2>
-          {userBookings.length > 0 ? (
-            <ul style={{ listStyle: "none", padding: 0 }}>
-              {userBookings.map((booking) => (
-                <li key={booking.id} className="trip-card">
-                  Trip: {getTripName(booking.tripId)} - Status: {booking.status}
-                </li>
-              ))}
-            </ul>
+        <div>
+          {travellerBookings.length > 0 ? (
+            travellerBookings.map((booking) => {
+              const trip = getTripDetails(booking.tripId);
+              const tripPhotos = photos.filter((p) => p.tripId === booking.tripId);
+              const firstPhoto = tripPhotos.length > 0 ? tripPhotos[0] : null;
+              return (
+                <div key={booking.id} className="booking-item trip-card">
+                  <h3 style={{ marginBottom: "10px", color: "#ff00ff" }}>{trip.name}</h3>
+                  {firstPhoto && (
+                    <img
+                      src={`http://localhost:8080${firstPhoto.url}`}
+                      alt={firstPhoto.description}
+                      style={{
+                        maxWidth: "150px",
+                        maxHeight: "100px",
+                        objectFit: "cover",
+                        borderRadius: "5px",
+                        marginBottom: "10px",
+                      }}
+                    />
+                  )}
+                  <p>
+                    <strong>Destination:</strong> {trip.destination}
+                  </p>
+                  <p>
+                    <strong>Schedule:</strong> {trip.schedule}
+                  </p>
+                  <p>
+                    <strong>Status:</strong> {booking.status}
+                  </p>
+                </div>
+              );
+            })
           ) : (
-            <p style={{ textAlign: "center" }}>No bookings found.</p>
+            <p style={{ textAlign: "center" }}>No bookings yet.</p>
           )}
-        </>
+        </div>
       )}
 
-      {(user.role === "Admin" || user.role === "Astronauts") && (
-        <>
-          <h2 style={{ color: "#ff00ff", marginBottom: "15px" }}>
-            {user.role === "Admin" ? "All Bookings" : "Trips with Bookings"}
-          </h2>
-          {user.role === "Admin" && (
-            <div style={{ marginBottom: "20px", textAlign: "center" }}>
-              <label style={{ marginRight: "10px" }}>Filter by Status: </label>
-              <select
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
-              >
-                <option value="all">All</option>
-                <option value="pending">Pending</option>
-                <option value="confirmed">Confirmed</option>
-                <option value="cancelled">Cancelled</option>
-              </select>
-            </div>
-          )}
-          {user.role === "Admin" ? (
-            filteredBookings.length > 0 ? (
-              <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "20px" }}>
-                <thead>
-                  <tr style={{ background: "rgba(255, 255, 255, 0.05)" }}>
-                    <th style={{ padding: "10px", border: "1px solid rgba(255, 255, 255, 0.1)" }}>Trip</th>
-                    <th style={{ padding: "10px", border: "1px solid rgba(255, 255, 255, 0.1)" }}>User</th>
-                    <th style={{ padding: "10px", border: "1px solid rgba(255, 255, 255, 0.1)" }}>Status</th>
-                    <th style={{ padding: "10px", border: "1px solid rgba(255, 255, 255, 0.1)" }}>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredBookings.map((booking) => (
+      {user.role === "Admin" && (
+        <div>
+          <h2 style={{ marginBottom: "20px", textAlign: "center" }}>All Bookings</h2>
+          {bookings.length > 0 ? (
+            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: "20px" }}>
+              <thead>
+                <tr>
+                  <th style={{ border: "1px solid #00d4ff", padding: "10px" }}>User</th>
+                  <th style={{ border: "1px solid #00d4ff", padding: "10px" }}>Trip</th>
+                  <th style={{ border: "1px solid #00d4ff", padding: "10px" }}>Destination</th>
+                  <th style={{ border: "1px solid #00d4ff", padding: "10px" }}>Schedule</th>
+                  <th style={{ border: "1px solid #00d4ff", padding: "10px" }}>Status</th>
+                  <th style={{ border: "1px solid #00d4ff", padding: "10px" }}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {bookings.map((booking) => {
+                  const trip = getTripDetails(booking.tripId);
+                  const bookedUser = getUserDetails(booking.userId);
+                  return (
                     <tr key={booking.id}>
-                      <td style={{ padding: "10px", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
-                        {getTripName(booking.tripId)}
+                      <td style={{ border: "1px solid #00d4ff", padding: "10px" }}>
+                        {bookedUser.name} ({bookedUser.email})
                       </td>
-                      <td style={{ padding: "10px", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
-                        {getUserEmail(booking.userId)}
-                      </td>
-                      <td style={{ padding: "10px", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
-                        {booking.status}
-                      </td>
-                      <td style={{ padding: "10px", border: "1px solid rgba(255, 255, 255, 0.1)", display: "flex", gap: "10px" }}>
-                        <button
-                          onClick={() => handleStatusUpdate(booking.id, "confirmed")}
-                        >
-                          Confirm
-                        </button>
-                        <button
-                          onClick={() => handleStatusUpdate(booking.id, "cancelled")}
-                        >
-                          Cancel
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <p style={{ textAlign: "center" }}>No bookings found.</p>
-            )
-          ) : (
-            getBookedTrips().length > 0 ? (
-              <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "20px" }}>
-                <thead>
-                  <tr style={{ background: "rgba(255, 255, 255, 0.05)" }}>
-                    <th style={{ padding: "10px", border: "1px solid rgba(255, 255, 255, 0.1)" }}>Trip Name</th>
-                    <th style={{ padding: "10px", border: "1px solid rgba(255, 255, 255, 0.1)" }}>Registered Users (Email)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {getBookedTrips().map((trip) => (
-                    <tr key={trip.id}>
-                      <td style={{ padding: "10px", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
-                        {trip.name}
-                      </td>
-                      <td style={{ padding: "10px", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
-                        {trip.emails.length > 0 ? (
-                          <ul style={{ margin: 0, paddingLeft: "20px" }}>
-                            {trip.emails.map((email, index) => (
-                              <li key={index}>{email}</li>
-                            ))}
-                          </ul>
-                        ) : (
-                          "No users registered"
+                      <td style={{ border: "1px solid #00d4ff", padding: "10px" }}>{trip.name}</td>
+                      <td style={{ border: "1px solid #00d4ff", padding: "10px" }}>{trip.destination}</td>
+                      <td style={{ border: "1px solid #00d4ff", padding: "10px" }}>{trip.schedule}</td>
+                      <td style={{ border: "1px solid #00d4ff", padding: "10px" }}>{booking.status}</td>
+                      <td style={{ border: "1px solid #00d4ff", padding: "10px" }}>
+                        {booking.status === "pending" && (
+                          <div style={{ display: "flex", gap: "10px" }}>
+                            <button onClick={() => handleStatusUpdate(booking.id, "confirmed")}>
+                              Confirm
+                            </button>
+                            <button onClick={() => handleStatusUpdate(booking.id, "cancelled")}>
+                              Cancel
+                            </button>
+                          </div>
                         )}
                       </td>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <p style={{ textAlign: "center" }}>No trips with bookings found.</p>
-            )
+                  );
+                })}
+              </tbody>
+            </table>
+          ) : (
+            <p style={{ textAlign: "center" }}>No bookings available.</p>
           )}
-        </>
+        </div>
+      )}
+
+      {user.role === "Astronauts" && (
+        <div>
+          <h2 style={{ marginBottom: "20px", textAlign: "center" }}>Assigned Trips</h2>
+          {tripsWithAssignments.length > 0 ? (
+            tripsWithAssignments.map((trip) => (
+              <div key={trip.id} className="trip-card">
+                <h3 style={{ marginBottom: "10px", color: "#ff00ff" }}>{trip.name}</h3>
+                <p>
+                  <strong>Destination:</strong> {trip.destination}
+                </p>
+                <p>
+                  <strong>Schedule:</strong> {trip.schedule}
+                </p>
+                <p>
+                  <strong>Status:</strong> {trip.status || "Unknown"}
+                </p>
+                <p>
+                  <strong>Pilots:</strong> {getAstronautNames(trip.id)}
+                </p>
+                <h4 style={{ marginTop: "15px", color: "#00d4ff" }}>Bookings</h4>
+                <ul>
+                  {getTripBookings(trip.id).length > 0 ? (
+                    getTripBookings(trip.id).map((booking) => {
+                      const bookedUser = getUserDetails(booking.userId);
+                      return (
+                        <li key={booking.id}>
+                          {bookedUser.name} ({bookedUser.email}) - {booking.status}
+                        </li>
+                      );
+                    })
+                  ) : (
+                    <li>No bookings for this trip yet.</li>
+                  )}
+                </ul>
+              </div>
+            ))
+          ) : (
+            <p style={{ textAlign: "center" }}>No assigned trips.</p>
+          )}
+        </div>
       )}
     </div>
   );
